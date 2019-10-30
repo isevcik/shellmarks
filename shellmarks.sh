@@ -4,24 +4,27 @@
 
 
 # USAGE:
-# s <bookmark_name>  - Saves the current directory as "bookmark_name"
-# g <bookmark_name>  - Goes (cd) to the directory associated with "bookmark_name"
-# d <bookmark_name>  - Deletes the bookmark
+# ms <bookmark_name>  - Saves the current directory as "bookmark_name"
+# m <bookmark_name>  - Goes (cd) to the directory associated with "bookmark_name"
+# md <bookmark_name>  - Deletes the bookmark
 
-# l                  - Lists all available bookmarks
-# l <prefix>         - Lists the specified bookmarks starting with prefix"
-# pd <bookmark_name> - pd is the same as `g` but uses pushd
-# s                  - Saves the default directory
-# g                  - Goes to the default directory
-# g -                - Goes to the previous directory
-# _p <bookmark_name> - Prints the directory associated with "bookmark_name"
+# ml                  - Lists all available bookmarks
+# ml <prefix>         - Lists the specified bookmarks starting with prefix"
+# mpd <bookmark_name> - pd is the same as `g` but uses pushd
+# ms                  - Saves the default directory
+# m                  - Goes to the default directory
+# m -                - Goes to the previous directory
+# m_p <bookmark_name> - Prints the directory associated with "bookmark_name"
 
 # Mac only (disabled on other systems)
-# o <bookmark_name>  - Open the directory associated with "bookmark_name" in Finder
-# y <bookmark_name>  - Open the directory associated with "bookmark_name" in a new tab
+# mo <bookmark_name>  - Open the directory associated with "bookmark_name" in Finder
+# my <bookmark_name>  - Open the directory associated with "bookmark_name" in a new tab
 
 # There is tab completion for all commands
 # based of https://github.com/huyng/bashmarks
+
+# Changes:
+# - Added m prefix to all commands
 
 
 # setup file to store bookmarks
@@ -39,7 +42,7 @@ function __print_pwd_on_action {
 }
 
 # save current directory to bookmarks
-function s {
+function ms {
 	check_help "$1"
 	_bookmark_name_valid "$@"
 	if [ -z "$exit_message" ]; then
@@ -55,7 +58,7 @@ function s {
 }
 
 # jump to bookmark
-function g {
+function m {
 	check_help $1
 	source $SDIRS
 	if [ -z $1 ]; then
@@ -75,7 +78,7 @@ function g {
 }
 
 # pushd to bookmark
-function pd {
+function mpd {
 	check_help $1
 	source $SDIRS
 	if [ -z $1 ]; then
@@ -96,7 +99,7 @@ function pd {
 
 
 # print bookmark
-function _p {
+function m_p {
 	check_help $1
 	source $SDIRS
 	echo "$(eval $(echo echo $(echo \$DIR_$1)))"
@@ -104,7 +107,7 @@ function _p {
 }
 
 # delete bookmark
-function d {
+function md {
 	check_help $1
 	_bookmark_name_valid "$@"
 	if [ -z "$exit_message" ]; then
@@ -117,7 +120,7 @@ function d {
 if [[ "`uname`" == "Darwin" ]]; then
 
 # open the specifed bookmark
-function o {
+function mo {
 	if [ -z $1 ]; then
 		open .
 		osascript -e 'tell application "Finder"' -e 'activate' -e 'end tell'
@@ -133,7 +136,7 @@ function o {
 }
 
 #jump to bookmark in a new tab in the current window
-function y {
+function my {
 	check_help $1
 	source $SDIRS
 	if [ -z $1 ]; then
@@ -210,7 +213,7 @@ function check_help {
 }
 
 # list bookmarks with dirname
-alias l='_bookmarks'
+alias ml='_bookmarks'
 function _bookmarks {
 	check_help $1
 	source $SDIRS
@@ -284,20 +287,20 @@ function _purge_line {
 
 # bind completion command for o g,p,d,pd to _comp
 if [ $ZSH_VERSION ]; then
-	compctl -K _compzsh o
-	compctl -K _compzsh g
-	compctl -K _compzsh _p
-	compctl -K _compzsh d
-	compctl -K _compzsh y
-	compctl -K _compzsh pd
+	compctl -K _compzsh mo
+	compctl -K _compzsh mg
+	compctl -K _compzsh m_p
+	compctl -K _compzsh md
+	compctl -K _compzsh my
+	compctl -K _compzsh mpd
 else
 	shopt -s progcomp
-	complete -F _comp o
-	complete -F _comp g
-	complete -F _comp _p
-	complete -F _comp d
-	complete -F _comp y
-	complete -F _comp pd
+	complete -F _comp mo
+	complete -F _comp m
+	complete -F _comp m_p
+	complete -F _comp md
+	complete -F _comp my
+	complete -F _comp mpd
 fi
 
 if [ $SHELLMARKS_k ]; then
